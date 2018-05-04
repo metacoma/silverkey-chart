@@ -1,0 +1,37 @@
+apiVersion: apps/v1beta2
+kind: Deployment
+metadata:
+  name: {{ template "silverkey.fullname" . }}-openresty
+  labels:
+    app: {{ template "silverkey.name" . }}-openresty
+    chart: {{ template "silverkey.chart" . }}-openresty
+    release: {{ .Release.Name }}-openresty
+    heritage: {{ .Release.Service }}-openresty
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ template "silverkey.name" . }}
+      release: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ template "silverkey.name" . }}
+        release: {{ .Release.Name }}
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.openresty.image }}:{{ .Values.openresty.tag }}"
+          imagePullPolicy: {{ .Values.openresty.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: 80
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /
+              port: http
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http

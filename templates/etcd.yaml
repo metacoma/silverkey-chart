@@ -1,0 +1,29 @@
+apiVersion: apps/v1beta2
+kind: Deployment
+metadata:
+  name: {{ template "silverkey.fullname" . }}-etcd
+  labels:
+    app: {{ template "silverkey.name" . }}-etcd
+    chart: {{ template "silverkey.chart" . }}-etcd
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ template "silverkey.name" . }}-etcd
+      release: {{ .Release.Name }}-etcd
+  template:
+    metadata:
+      labels:
+        app: {{ template "silverkey.name" . }}-etcd
+        release: {{ .Release.Name }}-etcd
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}-etcd
+          image: "{{ .Values.etcd.image }}:{{ .Values.etcd.tag }}"
+          imagePullPolicy: {{ .Values.etcd.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: 80
+              protocol: TCP
